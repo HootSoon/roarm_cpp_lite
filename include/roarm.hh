@@ -1,21 +1,27 @@
 #ifndef ROARM_HH
 #define ROARM_HH
-
+#include <vector>
+#include "serial/serial.h" // Serial library for arm communication
 
 class roarm{
     public:
-    roarm();
-    bool joints_angle_ctrl();
-    bool joints_radian_ctrl();
-    //Change void to return packets instead, or whatever
-    void joints_angle_get();
-    void joints_radian_get();
+
+    //baudrate=115200, host=None, timeout=0.1, debug=False, thread_lock=True, gripper_type="angular_direct"
+
+    roarm(String port = "asd", int baudrate = 115200,  timeout = 0.1);
+    bool joints_angle_ctrl(std::vector angles, int speed, int acc);
+    bool joints_radian_ctrl(std::vector radians, int speed, int acc);
+
+    //Change short to return packets instead, or whatever, might work
+    std::vector<short> joints_angle_get();
+    std::vector<short> joints_radian_get();
 
 
     private:
-    //Change void to return packets
-    void pose_get();
+    serial::Serial armCom;
+    std::vector<short> pose_get();
     void read_line();
+    bool send_command(String message);
     
 };
 

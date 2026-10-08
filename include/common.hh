@@ -1,8 +1,11 @@
 #ifndef COMMON_HH
 #define COMMON_HH
-#include <cstdint>
 
-//Command table
+#include <cstdint>
+#include <vector>
+#include <string>
+
+// Command table
 enum class JsonCmd : uint16_t {
     JOINT_RADIAN_CTRL            = 101,
     JOINTS_RADIAN_CTRL           = 102,
@@ -25,4 +28,6 @@ enum class JsonCmd : uint16_t {
     POSE_CTRL                    = 1041
 };
 
-#endif
+std::string handle_message_format(const std::vector<double>& values, JsonCmd commandID);
+
+#endif // COMMON_HH
