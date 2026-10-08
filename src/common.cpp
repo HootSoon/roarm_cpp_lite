@@ -6,6 +6,11 @@ std::string handle_message_format(const std::vector<double>& values, JsonCmd com
     uint16_t id = static_cast<uint16_t>(commandID); // Cast to int to use in message
 
     switch (commandID) {
+        // {"T":100}
+        case (JsonCmd::MOVE_INIT):
+            msg << "{\"T\":" << id << "}";
+            break;
+
         // Joints radian ctrl (102)
         // {"T":102,"base":0,"shoulder":0,"elbow":1.57,"wrist":0,"roll":0,"hand":1.57,"spd":0,"acc":10}
         case (JsonCmd::JOINTS_RADIAN_CTRL):

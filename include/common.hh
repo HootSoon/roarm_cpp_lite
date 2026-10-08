@@ -7,6 +7,7 @@
 
 // Command table
 enum class JsonCmd : uint16_t {
+    MOVE_INIT                    = 100,
     JOINT_RADIAN_CTRL            = 101,
     JOINTS_RADIAN_CTRL           = 102,
     FEEDBACK_GET                 = 105,
