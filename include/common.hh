@@ -31,4 +31,8 @@ enum class JsonCmd : uint16_t {
 
 std::string handle_message_format(const std::vector<double>& values, JsonCmd commandID);
 
+std::vector<std::string> unpack_feedback_message(std::string message);
+
+std::vector<double> convert_string_vector_to_double_vector(const std::vector<std::string>& stringVector);
+
 #endif // COMMON_HH

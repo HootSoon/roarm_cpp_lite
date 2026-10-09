@@ -1,5 +1,6 @@
 #include "common.hh"
 #include <sstream>
+#include <algorithm> // for transform function
 
 std::string handle_message_format(const std::vector<double>& values, JsonCmd commandID) {
     std::ostringstream msg;
@@ -70,6 +71,27 @@ std::string handle_message_format(const std::vector<double>& values, JsonCmd com
         default:
             break;
     }
-
     return msg.str();
+}
+
+std::vector<std::string> unpack_feedback_message(std::string message){
+    std::vector<std::string> split;
+    std::string messagecut = message;
+    int n = 0;
+    while(n < 8){
+        size_t start = messagecut.find(":")+1;
+        messagecut = messagecut.substr(start);
+        split.push_back(messagecut.substr(0,messagecut.find(",")));
+        n+1;
+    }
+    return split;
+}
+
+std::vector<double> convert_string_vector_to_double_vector(const std::vector<std::string>& stringVector){
+    std::vector<double> doubleVector(stringVector.size());
+    std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string& val)
+                    {
+                        return stod(val);
+                    });
+    return doubleVector;
 }

@@ -1,17 +1,20 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <atomic>
+#include <thread>
 #include "serial/serial.h" // Serial library for arm communication
 
 class roarm{
     public:
 
-    //baudrate=115200, host=None, timeout=0.1, debug=False, thread_lock=True, gripper_type="angular_direct"
-
     roarm(std::string port = "/dev/ttyUSB0", int baudrate = 115200);
+    ~roarm();
+    clean_up();
+
+    bool init();
     bool joints_angle_ctrl(std::vector<double> angles, int speed, int acc);
     bool joints_radian_ctrl(std::vector<double> radians, int speed, int acc);
-    bool init();
 
     //Change short to return packets instead, or whatever, might work
     std::vector<double> joints_angle_get();
@@ -19,11 +22,21 @@ class roarm{
 
     std::string read_line();
     bool send_command(std::string message);
+    
+    //Roarm Pose at last poll
+    std::vector<double> pose;
+
+    //Start threaded reading and saving of arm state
+    void poll_pose();
 
 
     private:
     serial::Serial armCom;
-    std::vector<double> pose_get();
+    bool get_feedback();
+
+    std::thread pollingThread;
+    std::atomic<bool> threadCondition;
+
     
 };
 

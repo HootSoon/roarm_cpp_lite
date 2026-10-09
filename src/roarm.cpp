@@ -2,9 +2,13 @@
 #include "common.hh"
 #include <iostream>
 
+
 roarm::roarm(std::string port, int baudrate ) : armCom(port, baudrate,serial::Timeout::simpleTimeout(1000)) {
-    std::cout << "Roarm Created" << std::endl;
+    //std::cout << "Roarm Created" << std::endl; // Debug Print
+
 }
+
+roarm::~roarm(){}
 
 bool roarm::init(){
     std::cout << "Init Command Send" << std::endl;
@@ -38,8 +42,29 @@ bool roarm::send_command(std::string message){
     return false;
 }
 
+
 std::string roarm::read_line(){
-    return armCom.readline();
+    if(armCom.available()>0){
+        return armCom.readline();
+    }
 }
 
+bool roarm::get_feedback(){
+    while(threadCondition){
+        pose = convert_string_vector_to_double_vector(unpack_feedback_message(read_line()));
+    }
+}
+
+void roarm::poll_pose(){
+    //Start threading of get_feedback
+    pollingThread(get_feedback());
+}
+
+roarm::clean_up(){
+    threadCondition = false;
+    if(pollingThread.joinable()){
+        pollingThread.join();
+    }
+    ~roarm();
+}
 
