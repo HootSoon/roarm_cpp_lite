@@ -39,7 +39,7 @@ std::vector<double> roarm::pose_get(){
     return pose.get_all();
 }
 
-bool roarm::send_command(std::string message){
+bool roarm::send_command(std::string& message){
     if(armCom.isOpen()){
         return armCom.write(message) == message.size();
     }
@@ -50,12 +50,12 @@ bool roarm::send_command(std::string message){
 std::string roarm::read_line(){
     if(armCom.available()>0){
         return armCom.readline();
-    }else{
+    }
     usleep(1000);
     return "";
 }
 
-bool roarm::get_feedback(){
+void roarm::get_feedback(){
     while(threadCondition){
         pose.set_all(convert_string_vector_to_double_vector(unpack_feedback_message(read_line())));
     }
