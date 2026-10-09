@@ -1,5 +1,4 @@
 #include "roarm.hh"
-#include "common.hh"
 #include <iostream>
 
 
@@ -8,10 +7,15 @@ roarm::roarm(std::string port, int baudrate ) : armCom(port, baudrate,serial::Ti
 
 }
 
-roarm::~roarm(){}
+roarm::~roarm(){
+    clean_up();
+}
 
 bool roarm::init(){
     std::cout << "Init Command Send" << std::endl;
+
+    send_command("{\"T\":999}\n");
+    send_command("{\"T\":210,\"cmd\":1}\n");
 
     std::string message = handle_message_format({0,0,90,0,0,180,10,10},JsonCmd::JOINTS_ANGLE_CTRL);
     return send_command(message);
@@ -32,7 +36,7 @@ bool roarm::joints_radian_ctrl(std::vector<double> radians, int speed, int acc){
 }       
 
 std::vector<double> roarm::pose_get(){
-    return {0.1,0.2};
+    return pose.get_all();
 }
 
 bool roarm::send_command(std::string message){
@@ -46,25 +50,30 @@ bool roarm::send_command(std::string message){
 std::string roarm::read_line(){
     if(armCom.available()>0){
         return armCom.readline();
-    }
+    }else{
+    usleep(1000);
+    return "";
 }
 
 bool roarm::get_feedback(){
     while(threadCondition){
-        pose = convert_string_vector_to_double_vector(unpack_feedback_message(read_line()));
+        pose.set_all(convert_string_vector_to_double_vector(unpack_feedback_message(read_line())));
     }
 }
 
 void roarm::poll_pose(){
     //Start threading of get_feedback
-    pollingThread(get_feedback());
+    if (pollingThread.joinable()) {
+        clean_up();
+    }
+    threadCondition = true;
+    pollingThread = std::thread(&roarm::get_feedback, this);
 }
 
-roarm::clean_up(){
+void roarm::clean_up(){
     threadCondition = false;
     if(pollingThread.joinable()){
         pollingThread.join();
     }
-    ~roarm();
 }
 

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <mutex>
 
 // Command table
 enum class JsonCmd : uint16_t {
@@ -27,6 +28,20 @@ enum class JsonCmd : uint16_t {
     MIDDLE_SET                   = 502,
     ECHO_SET                     = 605,
     POSE_CTRL                    = 1041
+};
+
+class ThreadSafeVector{
+    private:
+    std::vector<double> data;
+    mutable std::mutex mtx; // mutable so const methods can lock
+
+    public:
+    void push_back(double value);
+    void set_all(std::vector<double>& values);
+    std::vector<double> get_all() const;
+    bool get(size_t index, double &value) const;
+    size_t size() const;
+
 };
 
 std::string handle_message_format(const std::vector<double>& values, JsonCmd commandID);

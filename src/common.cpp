@@ -82,7 +82,7 @@ std::vector<std::string> unpack_feedback_message(std::string message){
         size_t start = messagecut.find(":")+1;
         messagecut = messagecut.substr(start);
         split.push_back(messagecut.substr(0,messagecut.find(",")));
-        n+1;
+        n++;
     }
     return split;
 }
@@ -91,7 +91,37 @@ std::vector<double> convert_string_vector_to_double_vector(const std::vector<std
     std::vector<double> doubleVector(stringVector.size());
     std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string& val)
                     {
-                        return stod(val);
+                        return std::stod(val);
                     });
     return doubleVector;
+}
+
+
+void ThreadSafeVector::push_back(double value) {
+    std::lock_guard<std::mutex> lock(mtx);
+    data.push_back(value);
+}
+
+void ThreadSafeVector::set_all(std::vector<double>& values) {
+    std::lock_guard<std::mutex> lock(mtx);
+    data = values;
+}
+
+std::vector<double> ThreadSafeVector::get_all() const {
+    std::lock_guard<std::mutex> lock(mtx);
+    return data;
+}
+
+// Get an element (thread-safe)
+bool ThreadSafeVector::get(size_t index, double &value) const {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (index >= data.size()) return false;
+    value = data[index];
+    return true;
+}
+
+    // Get size (thread-safe)
+size_t ThreadSafeVector::size() const {
+    std::lock_guard<std::mutex> lock(mtx);
+    return data.size();
 }
