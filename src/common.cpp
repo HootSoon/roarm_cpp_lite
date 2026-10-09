@@ -6,9 +6,10 @@ std::string handle_message_format(const std::vector<double>& values, JsonCmd com
     uint16_t id = static_cast<uint16_t>(commandID); // Cast to int to use in message
 
     switch (commandID) {
+        // MOVE_INIT IS NOT REALLY USED, it doesnt actually send arm to init position
         // {"T":100}
         case (JsonCmd::MOVE_INIT):
-            msg << "{\"T\":" << id << "}";
+            msg << "{\"T\":" << id << "}\n";
             break;
 
         // Joints radian ctrl (102)
@@ -51,6 +52,17 @@ std::string handle_message_format(const std::vector<double>& values, JsonCmd com
             if (!values.empty()) {
                 msg << "{\"T\":" << id << ","
                     << "\"led\":" << static_cast<int>(values[0])
+                    << "}\n";
+            }
+            break;
+
+        // torque-lock ctrl (210)
+        // {"T":210,"cmd":0}
+        // {"T":210,"cmd":1}
+        case (JsonCmd::TORQUE_SET):
+            if (!values.empty()) {
+                msg << "{\"T\":" << id << ","
+                    << "\"cmd\":" << static_cast<int>(values[0])
                     << "}\n";
             }
             break;

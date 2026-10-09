@@ -1,12 +1,16 @@
 #include "roarm.hh"
 #include "common.hh"
+#include <iostream>
 
 roarm::roarm(std::string port, int baudrate ) : armCom(port, baudrate,serial::Timeout::simpleTimeout(1000)) {
-    
+    std::cout << "Roarm Created" << std::endl;
 }
 
 bool roarm::init(){
-    return send_command(JsonCmd::MOVE_INIT);
+    std::cout << "Init Command Send" << std::endl;
+
+    std::string message = handle_message_format({0,0,90,0,0,180,10,10},JsonCmd::JOINTS_ANGLE_CTRL);
+    return send_command(message);
 } 
 
 bool roarm::joints_angle_ctrl(std::vector<double> angles, int speed, int acc){
