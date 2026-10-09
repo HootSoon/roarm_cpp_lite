@@ -39,7 +39,7 @@ std::vector<double> roarm::pose_get(){
     return pose.get_all();
 }
 
-bool roarm::send_command(std::string& message){
+bool roarm::send_command(const std::string& message){
     if(armCom.isOpen()){
         return armCom.write(message) == message.size();
     }

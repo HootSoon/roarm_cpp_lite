@@ -37,7 +37,7 @@ class ThreadSafeVector{
 
     public:
     void push_back(double value);
-    void set_all(std::vector<double>& values);
+    void set_all(const std::vector<double>& values);
     std::vector<double> get_all() const;
     bool get(size_t index, double &value) const;
     size_t size() const;

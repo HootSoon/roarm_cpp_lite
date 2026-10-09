@@ -102,7 +102,7 @@ void ThreadSafeVector::push_back(double value) {
     data.push_back(value);
 }
 
-void ThreadSafeVector::set_all(std::vector<double>& values) {
+void ThreadSafeVector::set_all(const std::vector<double>& values) {
     std::lock_guard<std::mutex> lock(mtx);
     data = values;
 }
