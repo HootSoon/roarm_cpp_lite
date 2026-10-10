@@ -78,7 +78,7 @@ std::vector<std::string> unpack_feedback_message(std::string message){
     std::vector<std::string> split;
     std::string messagecut = message;
     int n = 0;
-    while(n < 8){
+    while(n < 11){
         size_t start = messagecut.find(":")+1;
         messagecut = messagecut.substr(start);
         split.push_back(messagecut.substr(0,messagecut.find(",")));
