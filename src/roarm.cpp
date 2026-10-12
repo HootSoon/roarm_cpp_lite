@@ -55,9 +55,28 @@ std::string roarm::read_line(){
     return "";
 }
 
-void roarm::get_feedback(){
-    while(threadCondition){
-        pose.set_all(convert_string_vector_to_double_vector(unpack_feedback_message(read_line())));
+void roarm::get_feedback()
+{
+    while (threadCondition) {
+        std::string message = read_line();
+
+        if (message.empty()) {
+            continue;
+        }
+
+        try {
+            auto values = convert_string_vector_to_double_vector(
+                unpack_feedback_message(message)
+            );
+
+            pose.set_all(values);
+        }
+        catch (const std::invalid_argument&) {
+            // Skip nonnumeric or incomplete messages.
+        }
+        catch (const std::out_of_range&) {
+            // Skip numbers outside the supported range.
+        }
     }
 }
 
